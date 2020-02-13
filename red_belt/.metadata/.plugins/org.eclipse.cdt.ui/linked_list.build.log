@@ -1,0 +1,6 @@
+20:04:55 **** Incremental Build of configuration Debug for project linked_list ****
+make all 
+make: Nothing to be done for 'all'.
+
+20:04:56 Build Finished. 0 errors, 0 warnings. (took 514ms)
+

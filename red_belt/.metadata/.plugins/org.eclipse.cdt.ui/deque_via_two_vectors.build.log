@@ -1,0 +1,15 @@
+12:28:06 **** Incremental Build of configuration Debug for project deque_via_two_vectors ****
+make all 
+Building file: ../src/deque_via_two_vectors.cpp
+Invoking: GCC C++ Compiler
+g++ -std=c++1z -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/deque_via_two_vectors.d" -MT"src/deque_via_two_vectors.o" -o "src/deque_via_two_vectors.o" "../src/deque_via_two_vectors.cpp"
+Finished building: ../src/deque_via_two_vectors.cpp
+ 
+Building target: deque_via_two_vectors
+Invoking: GCC C++ Linker
+g++  -o "deque_via_two_vectors"  ./src/deque_via_two_vectors.o   
+Finished building target: deque_via_two_vectors
+ 
+
+12:28:07 Build Finished. 0 errors, 0 warnings. (took 1s.22ms)
+

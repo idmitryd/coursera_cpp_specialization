@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="Capacity"/>
+		<list key="findhistory">
+			<item value="unkno"/>
+			<item value="getitems"/>
+			<item value="Size"/>
+			<item value="capacity"/>
+			<item value="selected.push"/>
+			<item value="manager"/>
+			<item value="pages_"/>
+			<item value="&#x0A;124&#x0A;412"/>
+		</list>
+		<list key="replacehistory">
+			<item value="capacity_"/>
+			<item value="bm"/>
+		</list>
+	</section>
+</section>
