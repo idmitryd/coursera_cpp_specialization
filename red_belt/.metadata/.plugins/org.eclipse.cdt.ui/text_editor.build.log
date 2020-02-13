@@ -1,0 +1,6 @@
+16:01:20 **** Incremental Build of configuration Debug for project text_editor ****
+make all 
+make: Nothing to be done for 'all'.
+
+16:01:20 Build Finished. 0 errors, 0 warnings. (took 517ms)
+

@@ -1,0 +1,6 @@
+18:58:25 **** Incremental Build of configuration Debug for project stack_vector ****
+make all 
+make: Nothing to be done for 'all'.
+
+18:58:26 Build Finished. 0 errors, 0 warnings. (took 567ms)
+

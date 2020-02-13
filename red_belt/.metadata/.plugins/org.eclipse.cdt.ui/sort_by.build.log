@@ -1,0 +1,15 @@
+14:20:21 **** Incremental Build of configuration Debug for project sort_by ****
+make all 
+Building file: ../src/sort_by.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/sort_by.d" -MT"src/sort_by.o" -o "src/sort_by.o" "../src/sort_by.cpp"
+Finished building: ../src/sort_by.cpp
+ 
+Building target: sort_by
+Invoking: GCC C++ Linker
+g++  -o "sort_by"  ./src/sort_by.o   
+Finished building target: sort_by
+ 
+
+14:20:22 Build Finished. 0 errors, 0 warnings. (took 1s.219ms)
+

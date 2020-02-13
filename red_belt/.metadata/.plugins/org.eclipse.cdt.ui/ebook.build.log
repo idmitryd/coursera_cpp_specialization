@@ -1,0 +1,6 @@
+21:19:57 **** Incremental Build of configuration Debug for project ebook ****
+make all 
+make: Nothing to be done for 'all'.
+
+21:19:58 Build Finished. 0 errors, 0 warnings. (took 518ms)
+
