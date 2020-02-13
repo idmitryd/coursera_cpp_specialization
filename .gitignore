@@ -1,6 +1,7 @@
-#Eclipse metadata
+#Eclipse
 .metadata
 */.metadata
+*/*/Debug
 
 ### C++ ###
 # Prerequisites
