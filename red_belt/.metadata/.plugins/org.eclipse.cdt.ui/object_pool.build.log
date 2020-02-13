@@ -1,0 +1,14 @@
+21:19:58 **** Incremental Build of configuration Debug for project object_pool ****
+make all 
+Building target: object_pool
+Invoking: GCC C++ Linker
+g++  -o "object_pool"  ./src/object_pool.o   
+/usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/Scrt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+make: *** [object_pool] Error 1
+makefile:45: recipe for target 'object_pool' failed
+"make all" terminated with exit code 2. Build might be incomplete.
+
+21:19:58 Build Failed. 3 errors, 0 warnings. (took 631ms)
+
