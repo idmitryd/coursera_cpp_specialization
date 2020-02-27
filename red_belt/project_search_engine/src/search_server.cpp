@@ -8,7 +8,7 @@
 #include <iostream>
 
 vector<string> SplitIntoWords(const string& line) {
-  istringstream words_input(line);
+  istringstream words_input(move(line));
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
 }
 
@@ -18,7 +18,7 @@ SearchServer::SearchServer(istream& document_input) {
 
 void SearchServer::UpdateDocumentBase(istream& document_input) {
   InvertedIndex new_index;
-
+//  vector<string> docs;
   for (string current_document; getline(document_input, current_document); ) {
     new_index.Add(move(current_document));
   }
@@ -33,8 +33,8 @@ void SearchServer::AddQueriesStream(
   for (string current_query; getline(query_input, current_query); ) {
 
     for (auto& word : SplitIntoWords(current_query)) {
-      for (const size_t docid : index.Lookup(move(word))) {
-        docid_count[docid]++;
+      for (const auto& docid : index.Lookup(move(word))) {
+        docid_count[docid.first] += docid.second;
       }
     }
 
@@ -58,7 +58,7 @@ void SearchServer::AddQueriesStream(
       }
     );
 
-    search_results_output << current_query << ':';
+    search_results_output << move(current_query) << ':';
     for (auto [docid, hitcount] : Head(search_results, 5)) {
       search_results_output << " {"
         << "docid: " << docid << ", "
@@ -80,17 +80,18 @@ void SearchServer::AddQueriesStream(
 
 }
 
-void InvertedIndex::Add(const string& document) {
-  docs.push_back(document);
+void InvertedIndex::Add(string document) {
+  docs.push_back(move(document));
 
   const size_t docid = docs.size() - 1;
-  for (const auto& word : SplitIntoWords(document)) {
+  for (const auto& word : SplitIntoWords(docs.back())) {
     index[word].push_back(docid);
+    index_[word][docid]++;
   }
 }
 
-list<size_t> InvertedIndex::Lookup(const string& word) const {
-  if (auto it = index.find(word); it != index.end()) {
+map<int, int> InvertedIndex::Lookup(const string& word) const {
+  if (auto it = index_.find(word); it != index_.end()) {
     return it->second;
   } else {
     return {};

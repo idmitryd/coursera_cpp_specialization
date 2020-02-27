@@ -12,8 +12,13 @@ using namespace std;
 
 class InvertedIndex {
 public:
-  void Add(const string& document);
-  list<size_t> Lookup(const string& word) const;
+//  InvertedIndex() {}
+//  InvertedIndex(vector<string>& documents) {
+//    docs = move(documents);
+//
+//  }
+  void Add(string document);
+  map<int, int> Lookup(const string& word) const;
 
   const string& GetDocument(size_t id) const {
     return docs[id];
@@ -26,6 +31,7 @@ public:
 private:
   map<string, list<size_t>> index; //Почему не вектор?
   vector<string> docs;
+  map<string, map<int, int>> index_;
 };
 
 class SearchServer {
@@ -37,5 +43,4 @@ public:
 
 private:
   InvertedIndex index;
-  const int MAX_DOC_ID = 50000;
 };
