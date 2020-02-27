@@ -18,7 +18,10 @@ public:
 //
 //  }
   void Add(string document);
-  map<int, int> Lookup(const string& word) const;
+
+  void Add(vector<string> documents);
+
+  map<int, int> Lookup(string word) const;
 
   const string& GetDocument(size_t id) const {
     return docs[id];
@@ -32,6 +35,7 @@ private:
   map<string, list<size_t>> index; //Почему не вектор?
   vector<string> docs;
   map<string, map<int, int>> index_;
+  map<string, vector<int>> index__;
 };
 
 class SearchServer {

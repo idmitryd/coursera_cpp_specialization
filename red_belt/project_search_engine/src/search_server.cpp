@@ -59,22 +59,11 @@ void SearchServer::AddQueriesStream(
     );
 
     search_results_output << move(current_query) << ':';
-    for (auto [docid, hitcount] : Head(search_results, 5)) {
+    for (const auto& [docid, hitcount] : Head(search_results, 5)) {
       search_results_output << " {"
         << "docid: " << docid << ", "
         << "hitcount: " << hitcount << '}';
     }
-//    set<pair<int64_t, int64_t>> search_results_;
-//    for (const auto& item : docid_count) {
-//      search_results_.insert({item.second, -item.first});
-//    }
-//
-//    search_results_output << current_query << ':';
-//    for(auto& item : Tail(search_results_, 5)) {
-//      search_results_output << " {"
-//          << "docid: " << -item.second << ", "
-//          << "hitcount: " << item.first << '}';
-//    }
     search_results_output << endl;
   }
 
@@ -90,7 +79,22 @@ void InvertedIndex::Add(string document) {
   }
 }
 
-map<int, int> InvertedIndex::Lookup(const string& word) const {
+void InvertedIndex::Add(vector<string> documents) {
+  docs = move(documents);
+  int doc_n = -1;
+  for (const string& doc : docs) {
+    doc_n++;
+    for (const string& word : SplitIntoWords(doc)) {
+      if (index__.count(word) == 0) {
+        index__[word].reserve(docs.size());
+      }
+      index__[word][doc_n]++;
+    }
+  }
+}
+
+
+map<int, int> InvertedIndex::Lookup(string word) const {
   if (auto it = index_.find(word); it != index_.end()) {
     return it->second;
   } else {
