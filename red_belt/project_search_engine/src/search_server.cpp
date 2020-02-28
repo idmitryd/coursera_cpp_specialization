@@ -1,7 +1,6 @@
 #include "search_server.h"
 #include "iterator_range.h"
 
-#include <set>
 #include <algorithm>
 #include <iterator>
 #include <sstream>
@@ -13,7 +12,7 @@ vector<string> SplitIntoWords(const string& line) {
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
 }
 
-vector<string_view> SplitIntoWords(string_view line, string delims = " ") {
+vector<string_view> SplitIntoWordsSV(string_view line, string delims = " ") {
   vector<string_view> output;
   size_t first = 0;
   while(first < line.size()) {
@@ -44,9 +43,9 @@ void SearchServer::UpdateDocumentBase(istream& document_input) {
   index = move(new_index);
 }
 
-void SearchServer::AddQueriesStream(
+void SearchServer::AddQueriesStream (
   istream& query_input, ostream& search_results_output
-) {
+) const {
 
   vector<int> docid_count(index.IndexSize());
   for (string current_query; getline(query_input, current_query); ) {
@@ -56,11 +55,6 @@ void SearchServer::AddQueriesStream(
       for (const auto& item : docid_for_word) {
         docid_count[item.first] += item.second;
       }
-//      cout << docid_count.size() << ' ' << docid_for_word.size() << ' ' << docid_for_word.capacity() << endl;
-//      if (docid_for_word.size() != docid_count.size()) continue;
-//      for(size_t i = 0; i < index.IndexSize(); ++i) {
-//        docid_count[i] += docid_for_word[i];
-//      }
     }
 
     vector<pair<size_t, size_t>> search_results;
@@ -94,23 +88,13 @@ void SearchServer::AddQueriesStream(
 
 }
 
-//void InvertedIndex::Add(string document) {
-//  docs.push_back(move(document));
-//
-//  const size_t docid = docs.size() - 1;
-//  for (const auto& word : SplitIntoWords(docs.back())) {
-//    index[word].push_back(docid);
-//    index_[word][docid]++;
-//  }
-//}
-
 void InvertedIndex::Add(vector<string> documents) {
   docs = move(documents);
   map<string_view, map<int,int>> temp;
   int doc_id = -1;
   for (const string& doc : docs) {
     doc_id ++;
-    for (auto word : SplitIntoWords(string_view(doc))) {
+    for (auto word : SplitIntoWordsSV(string_view(doc))) {
       temp[word][doc_id]++;
     }
   }
