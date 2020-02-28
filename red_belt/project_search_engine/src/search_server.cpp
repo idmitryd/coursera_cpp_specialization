@@ -6,10 +6,28 @@
 #include <iterator>
 #include <sstream>
 #include <iostream>
+#include <iterator>
 
 vector<string> SplitIntoWords(const string& line) {
   istringstream words_input(move(line));
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
+}
+
+vector<string_view> SplitIntoWords(string_view line, string delims = " ") {
+  vector<string_view> output;
+  size_t first = 0;
+  while(first < line.size()) {
+    const auto second = line.find_first_of(delims, first);
+    if (first != second) {
+      output.emplace_back(line.substr(first, second - first));
+    }
+
+    if (second == string_view::npos){
+      break;
+    }
+    first = second + 1;
+  }
+  return output;
 }
 
 SearchServer::SearchServer(istream& document_input) {
@@ -17,25 +35,32 @@ SearchServer::SearchServer(istream& document_input) {
 }
 
 void SearchServer::UpdateDocumentBase(istream& document_input) {
-  InvertedIndex new_index;
-//  vector<string> docs;
+  vector<string> docs;
   for (string current_document; getline(document_input, current_document); ) {
-    new_index.Add(move(current_document));
+    docs.push_back(move(current_document));
   }
-
+  InvertedIndex new_index;
+  new_index.Add(move(docs));
   index = move(new_index);
 }
 
 void SearchServer::AddQueriesStream(
   istream& query_input, ostream& search_results_output
 ) {
+
   vector<int> docid_count(index.IndexSize());
   for (string current_query; getline(query_input, current_query); ) {
 
     for (auto& word : SplitIntoWords(current_query)) {
-      for (const auto& docid : index.Lookup(move(word))) {
-        docid_count[docid.first] += docid.second;
+      vector<pair<size_t, size_t>> docid_for_word = index.Lookup(move(word));
+      for (const auto& item : docid_for_word) {
+        docid_count[item.first] += item.second;
       }
+//      cout << docid_count.size() << ' ' << docid_for_word.size() << ' ' << docid_for_word.capacity() << endl;
+//      if (docid_for_word.size() != docid_count.size()) continue;
+//      for(size_t i = 0; i < index.IndexSize(); ++i) {
+//        docid_count[i] += docid_for_word[i];
+//      }
     }
 
     vector<pair<size_t, size_t>> search_results;
@@ -69,35 +94,39 @@ void SearchServer::AddQueriesStream(
 
 }
 
-void InvertedIndex::Add(string document) {
-  docs.push_back(move(document));
-
-  const size_t docid = docs.size() - 1;
-  for (const auto& word : SplitIntoWords(docs.back())) {
-    index[word].push_back(docid);
-    index_[word][docid]++;
-  }
-}
+//void InvertedIndex::Add(string document) {
+//  docs.push_back(move(document));
+//
+//  const size_t docid = docs.size() - 1;
+//  for (const auto& word : SplitIntoWords(docs.back())) {
+//    index[word].push_back(docid);
+//    index_[word][docid]++;
+//  }
+//}
 
 void InvertedIndex::Add(vector<string> documents) {
   docs = move(documents);
-  int doc_n = -1;
+  map<string_view, map<int,int>> temp;
+  int doc_id = -1;
   for (const string& doc : docs) {
-    doc_n++;
-    for (const string& word : SplitIntoWords(doc)) {
-      if (index__.count(word) == 0) {
-        index__[word].reserve(docs.size());
-      }
-      index__[word][doc_n]++;
+    doc_id ++;
+    for (auto word : SplitIntoWords(string_view(doc))) {
+      temp[word][doc_id]++;
     }
+  }
+  for (auto& item : temp) {
+    index[item.first].insert(
+        index[item.first].begin(),
+        make_move_iterator(item.second.begin()),
+        make_move_iterator(item.second.end()));
   }
 }
 
 
-map<int, int> InvertedIndex::Lookup(string word) const {
-  if (auto it = index_.find(word); it != index_.end()) {
+const vector<pair<size_t, size_t>>& InvertedIndex::Lookup(string word) const{
+  if (auto it = index.find(word); it != index.end()) {
     return it->second;
   } else {
-    return {};
+    return empty_vector;
   }
 }

@@ -17,11 +17,11 @@ public:
 //    docs = move(documents);
 //
 //  }
-  void Add(string document);
+//  void Add(string document);
 
   void Add(vector<string> documents);
 
-  map<int, int> Lookup(string word) const;
+  const vector<pair<size_t, size_t>>& Lookup(string word) const;
 
   const string& GetDocument(size_t id) const {
     return docs[id];
@@ -32,10 +32,13 @@ public:
   }
 
 private:
-  map<string, list<size_t>> index; //Почему не вектор?
+  vector<pair<size_t, size_t>> empty_vector = {};
+//  map<string, list<size_t>> index; //Почему не вектор?
   vector<string> docs;
-  map<string, map<int, int>> index_;
-  map<string, vector<int>> index__;
+//  map<string, map<int, int>> index_;
+//  map<string, vector<int>> index__;
+  map<string_view, vector<pair<size_t, size_t>>> index;
+
 };
 
 class SearchServer {
