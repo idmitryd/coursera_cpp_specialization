@@ -31,7 +31,8 @@ private:
 
 class InvertedIndex {
 public:
-  void Add(vector<string> documents);
+  InvertedIndex() = default;
+  explicit InvertedIndex(istream& document_input);
   const vector<pair<size_t, size_t>>& Lookup(string word) const;
 
   const string& GetDocument(size_t id) const {
@@ -52,10 +53,13 @@ private:
 class SearchServer {
 public:
   SearchServer() = default;
-  explicit SearchServer(istream& document_input);
+  explicit SearchServer(istream& document_input) : index_sync(InvertedIndex(document_input))
+  {
+  }
   void UpdateDocumentBase(istream& document_input);
-  void AddQueriesStream(istream& query_input, ostream& search_results_output) const;
+  void AddQueriesStream(istream& query_input, ostream& search_results_output);
 
 private:
-  InvertedIndex index;
+  Synchronized<InvertedIndex> index_sync;
+  vector<future<void>> futures;
 };

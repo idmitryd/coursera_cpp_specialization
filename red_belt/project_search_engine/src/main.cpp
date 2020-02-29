@@ -21,8 +21,8 @@ void TestFunctionality(
   istringstream docs_input(Join('\n', docs));
   istringstream queries_input(Join('\n', queries));
 
-  SearchServer srv;
-  srv.UpdateDocumentBase(docs_input);
+  SearchServer srv(docs_input);
+//  srv.UpdateDocumentBase(docs_input);
   ostringstream queries_output;
   srv.AddQueriesStream(queries_input, queries_output);
 
