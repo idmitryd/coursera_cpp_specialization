@@ -45,37 +45,36 @@ void ProcessQueries(
   vector<int> docid_count;
   vector<pair<size_t, size_t>> search_results;
   for (string current_query; getline(query_input, current_query); ) {
+    vector<string_view> words = SplitIntoWordsSV(current_query);
     {
       auto ind_acc = index_sync.GetAccess();
       size_t doc_size = ind_acc.ref_to_value.IndexSize();
       docid_count.assign(doc_size, 0);
-      for (auto& word : SplitIntoWords(current_query)) {
-        vector<pair<size_t, size_t>> docid_for_word = ind_acc.ref_to_value.Lookup(move(word));
-        for (const auto& item : docid_for_word) {
+      for (auto& word : words) {
+        for (const auto& item : ind_acc.ref_to_value.Lookup(move(word))) {
           docid_count[item.first] += item.second;
         }
       }
-
-      search_results.clear();
-      for (size_t i = 0; i < docid_count.size(); ++i) {
-        if (docid_count[i] > 0) {
-          search_results.push_back({i, docid_count[i]});
-          docid_count[i] = 0;
-        }
+    }
+    search_results.clear();
+    for (size_t i = 0; i < docid_count.size(); ++i) {
+      if (docid_count[i] > 0) {
+        search_results.push_back({i, docid_count[i]});
+        docid_count[i] = 0;
       }
     }
-      partial_sort(
-        begin(search_results),
-        next(begin(search_results), min<size_t>(5, search_results.size())),
-        end(search_results),
-        [](pair<size_t, size_t> lhs, pair<size_t, size_t> rhs) {
-          int64_t lhs_docid = lhs.first;
-          auto lhs_hit_count = lhs.second;
-          int64_t rhs_docid = rhs.first;
-          auto rhs_hit_count = rhs.second;
-          return make_pair(lhs_hit_count, -lhs_docid) > make_pair(rhs_hit_count, -rhs_docid);
-        }
-      );
+    partial_sort(
+      begin(search_results),
+      next(begin(search_results), min<size_t>(5, search_results.size())),
+      end(search_results),
+      [](pair<size_t, size_t> lhs, pair<size_t, size_t> rhs) {
+        int64_t lhs_docid = lhs.first;
+        auto lhs_hit_count = lhs.second;
+        int64_t rhs_docid = rhs.first;
+        auto rhs_hit_count = rhs.second;
+        return make_pair(lhs_hit_count, -lhs_docid) > make_pair(rhs_hit_count, -rhs_docid);
+      }
+    );
 
       search_results_output << move(current_query) << ':';
       for (const auto& [docid, hitcount] : Head(search_results, 5)) {
@@ -83,18 +82,27 @@ void ProcessQueries(
           << "docid: " << docid << ", "
           << "hitcount: " << hitcount << '}';
       }
-      search_results_output << endl;
+      search_results_output << '\n';
     }
 }
 
 void SearchServer::UpdateDocumentBase(istream& document_input) {
-  UpdateDataBase(document_input, index_sync);
+  futures.push_back(
+      async(
+          UpdateDataBase, ref(document_input), ref(index_sync)
+          )
+  );
 }
 
 void SearchServer::AddQueriesStream (
   istream& query_input, ostream& search_results_output
 )  {
-  ProcessQueries(query_input, search_results_output, index_sync);
+  futures.push_back(
+      async(
+          ProcessQueries, ref(query_input), ref(search_results_output), ref(index_sync)
+      )
+  );
+//  ProcessQueries(query_input, search_results_output, index_sync);
 }
 
 InvertedIndex::InvertedIndex(istream& document_input) {
@@ -118,7 +126,7 @@ InvertedIndex::InvertedIndex(istream& document_input) {
 
 }
 
-const vector<pair<size_t, size_t>>& InvertedIndex::Lookup(string word) const{
+const vector<pair<size_t, size_t>>& InvertedIndex::Lookup(string_view word) const{
   if (auto it = index.find(word); it != index.end()) {
     return it->second;
   } else {

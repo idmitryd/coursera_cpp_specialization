@@ -33,7 +33,7 @@ class InvertedIndex {
 public:
   InvertedIndex() = default;
   explicit InvertedIndex(istream& document_input);
-  const vector<pair<size_t, size_t>>& Lookup(string word) const;
+  const vector<pair<size_t, size_t>>& Lookup(string_view word) const;
 
   const string& GetDocument(size_t id) const {
     return docs[id];
